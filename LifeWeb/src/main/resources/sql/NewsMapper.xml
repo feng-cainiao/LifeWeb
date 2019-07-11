@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="newswebsite.dao.NewsMapper">
+
+    <resultMap id="map1" type="newswebsite.pojo.News">
+      <id column="news_nid" jdbcType="INTEGER" property="newsNid" />
+      <result column="news_title" jdbcType="VARCHAR" property="newsTitle" />
+      <result column="news_picture" jdbcType="VARCHAR" property="newsPicture" />
+      <result column="news_keyword" jdbcType="VARCHAR" property="newsKeyword" />
+    </resultMap>
+    <!--新闻专栏热度-->
+    <select id="select_keyword" parameterType="java.lang.String" resultMap="map1">
+       SELECT *
+       FROM info_news n
+       WHERE n.`news_nid` IN (
+         SELECT c.`news_nid`
+         FROM info_news_comment c
+         GROUP BY c.`news_nid`
+       )AND  n.`news_title` LIKE '%习近平%'
+    </select>
+    <!--新闻主界面-->
+    <select id="select_top" parameterType="java.lang.String" resultMap="map1">
+         SELECT *
+         FROM info_news n
+         WHERE n.`news_tid` = 1
+         ORDER BY n.`news_time` DESC
+    </select>
+ <!-- 新闻导航-->
+  <select id="select_kindArticle" parameterType="java.lang.Integer" resultMap="map1">
+      SELECT *
+      FROM info_news a
+      WHERE a.`news_tid`=#{newsTid,jdbcType=INTEGER}
+      ORDER BY a.`news_time` DESC
+    </select>
+  <!--搜索-->
+  <select id="select_search" parameterType="java.util.Map" resultMap="map1">
+     SELECT * FROM info_news AS n
+     <if test="searchword !=null">
+       WHERE n.`news_title` LIKE concat('%',#{searchword,jdbcType=VARCHAR},'%')
+     </if>
+     <if test="searchtitle!= null">
+       WHERE n.`news_title` LIKE concat('%',#{searchtitle,jdbcType=VARCHAR},'%')
+     </if>
+     ORDER BY n.`news_time` DESC
+    </select>
+
+   <!-- 搜寻频道新闻-->
+   <select id="search_channel" parameterType="java.lang.Integer" resultMap="map1">
+      SELECT *
+      FROM  info_news n
+      WHERE n.`news_keyword`=#{titleId,jdbcType=INTEGER}
+   </select>
+
+  <select id="select_searchtitle" parameterType="java.lang.String" resultMap="map1">
+     SELECT * FROM info_news AS n
+
+     ORDER BY n.`news_time` DESC
+    </select>
+  <select id="select_right" parameterType="java.util.Map" resultMap="map1">
+      SELECT  * FROM info_news  n ,info_news_company  c
+      WHERE  c.`company_name`=#{companyName,jdbcType=VARCHAR} and n.`news_time` LIKE #{time,jdbcType=VARCHAR} and n.`company_id`=c.`company_id`
+      limit 4
+    </select>
+  <resultMap id="map2" type="newswebsite.pojo.News">
+    <id column="news_nid" jdbcType="INTEGER" property="newsNid" />
+    <result column="news_title" jdbcType="VARCHAR" property="newsTitle" />
+    <result column="news_time" jdbcType="TIMESTAMP" property="newsTime" />
+    <result column="news_content" jdbcType="LONGVARCHAR" property="newsContent" />
+    <result column="news_approve" jdbcType="INTEGER" property="newsApprove" />
+    <result column="news_comment" jdbcType="INTEGER" property="newsComment" />
+    <association property="company" javaType="newswebsite.pojo.Company">
+      <id column="company_id" jdbcType="INTEGER" property="companyId" />
+      <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    </association>
+  </resultMap>
+   <select id="select_article" parameterType="java.lang.Integer" resultMap="map2">
+      SELECT n.`news_approve`,n.`news_comment`,n.`news_content`,n.`news_nid`,n.`news_time`,n.`news_title`,c.`company_id`,c.`company_name`
+       FROM info_news n,info_news_company  c
+       WHERE n.`news_nid`=#{newsNid,jdbcType=INTEGER}  and n.`company_id`=c.`company_id`
+   </select>
+
+  <!-- 相关频道-->
+  <resultMap id="map3" type="newswebsite.pojo.Title">
+    <id column="title_id" jdbcType="INTEGER" property="titleId" />
+    <result column="title_name" jdbcType="VARCHAR" property="titleName" />
+    <result column="news_tid" jdbcType="INTEGER" property="newsTid" />
+  </resultMap>
+  <select id="relevant_channel" parameterType="java.lang.Integer" resultMap="map3">
+      SELECT *
+     FROM info_news_title t
+     WHERE t.`news_tid`=#{newsTid,jdbcType=INTEGER}
+  </select>
+
+
+
+  <resultMap id="map4" type="newswebsite.pojo.News">
+    <result column="news_keyword" jdbcType="VARCHAR" property="newsKeyword" />
+  </resultMap>
+  <select id="select_searchkey" parameterType="java.lang.String" resultMap="map4">
+      SELECT * FROM info_news AS n WHERE  n.`news_time` LIKE #{time,jdbcType=VARCHAR}
+      ORDER BY n.`news_approve` DESC
+       LIMIT 1
+   </select>
+
+   <update id="update_approve" parameterType="java.lang.Integer">
+     UPDATE info_news n
+     SET n.`news_approve`=n.`news_approve`+1
+     WHERE n.`news_nid` =#{newsNid}
+   </update>
+
+   <update id="update_comment" parameterType="java.lang.Integer">
+      UPDATE info_news n
+      SET n.`news_comment`=n.`news_comment`+1
+      WHERE n.`news_nid`=#{newsNid}
+   </update>
+
+  <resultMap id="BaseResultMap" type="newswebsite.pojo.News">
+    <id column="news_nid" jdbcType="INTEGER" property="newsNid" />
+    <result column="news_tid" jdbcType="INTEGER" property="newsTid" />
+    <result column="news_title" jdbcType="VARCHAR" property="newsTitle" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="news_time" jdbcType="TIMESTAMP" property="newsTime" />
+    <result column="news_approve" jdbcType="INTEGER" property="newsApprove" />
+    <result column="news_comment" jdbcType="INTEGER" property="newsComment" />
+    <result column="news_keyword" jdbcType="VARCHAR" property="newsKeyword" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="newswebsite.pojo.NewsWithBLOBs">
+    <result column="news_content" jdbcType="LONGVARCHAR" property="newsContent" />
+    <result column="news_picture" jdbcType="LONGVARBINARY" property="newsPicture" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    news_nid, news_tid, news_title, company_id, news_time, news_approve, news_comment, 
+    news_keyword
+  </sql>
+  <sql id="Blob_Column_List">
+    news_content, news_picture
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="newswebsite.pojo.NewsExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from info_news
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="newswebsite.pojo.NewsExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from info_news
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from info_news
+    where news_nid = #{newsNid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from info_news
+    where news_nid = #{newsNid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="newswebsite.pojo.NewsExample">
+    delete from info_news
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="newswebsite.pojo.NewsWithBLOBs">
+    insert into info_news (news_nid, news_tid, news_title, 
+      company_id, news_time, news_approve, 
+      news_comment, news_keyword, news_content, 
+      news_picture)
+    values (#{newsNid,jdbcType=INTEGER}, #{newsTid,jdbcType=INTEGER}, #{newsTitle,jdbcType=VARCHAR}, 
+      #{companyId,jdbcType=INTEGER}, #{newsTime,jdbcType=TIMESTAMP}, #{newsApprove,jdbcType=INTEGER}, 
+      #{newsComment,jdbcType=INTEGER}, #{newsKeyword,jdbcType=VARCHAR}, #{newsContent,jdbcType=LONGVARCHAR}, 
+      #{newsPicture,jdbcType=LONGVARBINARY})
+  </insert>
+  <insert id="insertSelective" parameterType="newswebsite.pojo.NewsWithBLOBs">
+    insert into info_news
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="newsNid != null">
+        news_nid,
+      </if>
+      <if test="newsTid != null">
+        news_tid,
+      </if>
+      <if test="newsTitle != null">
+        news_title,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="newsTime != null">
+        news_time,
+      </if>
+      <if test="newsApprove != null">
+        news_approve,
+      </if>
+      <if test="newsComment != null">
+        news_comment,
+      </if>
+      <if test="newsKeyword != null">
+        news_keyword,
+      </if>
+      <if test="newsContent != null">
+        news_content,
+      </if>
+      <if test="newsPicture != null">
+        news_picture,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="newsNid != null">
+        #{newsNid,jdbcType=INTEGER},
+      </if>
+      <if test="newsTid != null">
+        #{newsTid,jdbcType=INTEGER},
+      </if>
+      <if test="newsTitle != null">
+        #{newsTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="newsTime != null">
+        #{newsTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="newsApprove != null">
+        #{newsApprove,jdbcType=INTEGER},
+      </if>
+      <if test="newsComment != null">
+        #{newsComment,jdbcType=INTEGER},
+      </if>
+      <if test="newsKeyword != null">
+        #{newsKeyword,jdbcType=VARCHAR},
+      </if>
+      <if test="newsContent != null">
+        #{newsContent,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="newsPicture != null">
+        #{newsPicture,jdbcType=LONGVARBINARY},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="newswebsite.pojo.NewsExample" resultType="java.lang.Long">
+    select count(*) from info_news
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update info_news
+    <set>
+      <if test="record.newsNid != null">
+        news_nid = #{record.newsNid,jdbcType=INTEGER},
+      </if>
+      <if test="record.newsTid != null">
+        news_tid = #{record.newsTid,jdbcType=INTEGER},
+      </if>
+      <if test="record.newsTitle != null">
+        news_title = #{record.newsTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.companyId != null">
+        company_id = #{record.companyId,jdbcType=INTEGER},
+      </if>
+      <if test="record.newsTime != null">
+        news_time = #{record.newsTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.newsApprove != null">
+        news_approve = #{record.newsApprove,jdbcType=INTEGER},
+      </if>
+      <if test="record.newsComment != null">
+        news_comment = #{record.newsComment,jdbcType=INTEGER},
+      </if>
+      <if test="record.newsKeyword != null">
+        news_keyword = #{record.newsKeyword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.newsContent != null">
+        news_content = #{record.newsContent,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.newsPicture != null">
+        news_picture = #{record.newsPicture,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update info_news
+    set news_nid = #{record.newsNid,jdbcType=INTEGER},
+      news_tid = #{record.newsTid,jdbcType=INTEGER},
+      news_title = #{record.newsTitle,jdbcType=VARCHAR},
+      company_id = #{record.companyId,jdbcType=INTEGER},
+      news_time = #{record.newsTime,jdbcType=TIMESTAMP},
+      news_approve = #{record.newsApprove,jdbcType=INTEGER},
+      news_comment = #{record.newsComment,jdbcType=INTEGER},
+      news_keyword = #{record.newsKeyword,jdbcType=VARCHAR},
+      news_content = #{record.newsContent,jdbcType=LONGVARCHAR},
+      news_picture = #{record.newsPicture,jdbcType=LONGVARBINARY}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update info_news
+    set news_nid = #{record.newsNid,jdbcType=INTEGER},
+      news_tid = #{record.newsTid,jdbcType=INTEGER},
+      news_title = #{record.newsTitle,jdbcType=VARCHAR},
+      company_id = #{record.companyId,jdbcType=INTEGER},
+      news_time = #{record.newsTime,jdbcType=TIMESTAMP},
+      news_approve = #{record.newsApprove,jdbcType=INTEGER},
+      news_comment = #{record.newsComment,jdbcType=INTEGER},
+      news_keyword = #{record.newsKeyword,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="newswebsite.pojo.NewsWithBLOBs">
+    update info_news
+    <set>
+      <if test="newsTid != null">
+        news_tid = #{newsTid,jdbcType=INTEGER},
+      </if>
+      <if test="newsTitle != null">
+        news_title = #{newsTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="newsTime != null">
+        news_time = #{newsTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="newsApprove != null">
+        news_approve = #{newsApprove,jdbcType=INTEGER},
+      </if>
+      <if test="newsComment != null">
+        news_comment = #{newsComment,jdbcType=INTEGER},
+      </if>
+      <if test="newsKeyword != null">
+        news_keyword = #{newsKeyword,jdbcType=VARCHAR},
+      </if>
+      <if test="newsContent != null">
+        news_content = #{newsContent,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="newsPicture != null">
+        news_picture = #{newsPicture,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where news_nid = #{newsNid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="newswebsite.pojo.NewsWithBLOBs">
+    update info_news
+    set news_tid = #{newsTid,jdbcType=INTEGER},
+      news_title = #{newsTitle,jdbcType=VARCHAR},
+      company_id = #{companyId,jdbcType=INTEGER},
+      news_time = #{newsTime,jdbcType=TIMESTAMP},
+      news_approve = #{newsApprove,jdbcType=INTEGER},
+      news_comment = #{newsComment,jdbcType=INTEGER},
+      news_keyword = #{newsKeyword,jdbcType=VARCHAR},
+      news_content = #{newsContent,jdbcType=LONGVARCHAR},
+      news_picture = #{newsPicture,jdbcType=LONGVARBINARY}
+    where news_nid = #{newsNid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="newswebsite.pojo.News">
+    update info_news
+    set news_tid = #{newsTid,jdbcType=INTEGER},
+      news_title = #{newsTitle,jdbcType=VARCHAR},
+      company_id = #{companyId,jdbcType=INTEGER},
+      news_time = #{newsTime,jdbcType=TIMESTAMP},
+      news_approve = #{newsApprove,jdbcType=INTEGER},
+      news_comment = #{newsComment,jdbcType=INTEGER},
+      news_keyword = #{newsKeyword,jdbcType=VARCHAR}
+    where news_nid = #{newsNid,jdbcType=INTEGER}
+  </update>
+</mapper>

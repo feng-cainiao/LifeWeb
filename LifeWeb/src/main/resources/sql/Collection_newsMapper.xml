@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="newswebsite.dao.Collection_newsMapper">
+  <resultMap id="BaseResultMap" type="newswebsite.pojo.Collection_news">
+    <id column="collection_id" jdbcType="INTEGER" property="collectionId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="news_nid" jdbcType="INTEGER" property="newsNid" />
+    <result column="news_title" jdbcType="VARCHAR" property="newsTitle" />
+    <result column="news_picture" jdbcType="VARCHAR" property="newsPicture" />
+    <result column="collectioin_time" jdbcType="TIMESTAMP" property="collectionTime" />
+  </resultMap>
+
+
+  <insert id="insert" parameterType="newswebsite.pojo.Collection_news">
+    insert into info_news_collection (collection_id, user_id, news_nid,
+      news_title, news_picture,collectioin_time)
+    values (null, #{userId,jdbcType=INTEGER}, #{newsNid,jdbcType=INTEGER},
+      #{newsTitle,jdbcType=VARCHAR}, #{newsPicture,jdbcType=LONGVARBINARY},#{collectionTime,jdbcType=TIMESTAMP})
+  </insert>
+  <select id="selectCollection" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    SELECT DISTINCT ic.`news_nid`,ic.`news_title`,ic.`news_picture`,ic.`collectioin_time`
+    FROM info_news_collection ic
+    WHERE ic.`user_id`= #{userId,jdbcType=INTEGER}
+  </select>
+
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="newswebsite.pojo.Collection_news">
+    <result column="news_picture" jdbcType="LONGVARBINARY" property="newsPicture" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    collection_id, user_id, news_nid, news_title
+  </sql>
+  <sql id="Blob_Column_List">
+    news_picture
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="newswebsite.pojo.Collection_newsExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from info_news_collection
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="newswebsite.pojo.Collection_newsExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from info_news_collection
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from info_news_collection
+    where collection_id = #{collectionId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="newswebsite.pojo.Collection_newsExample">
+    delete from info_news_collection
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+
+
+
+
+
+
+
+  <insert id="insertSelective" parameterType="newswebsite.pojo.Collection_news">
+    insert into info_news_collection
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="collectionId != null">
+        collection_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="newsNid != null">
+        news_nid,
+      </if>
+      <if test="newsTitle != null">
+        news_title,
+      </if>
+      <if test="newsPicture != null">
+        news_picture,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="collectionId != null">
+        #{collectionId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="newsNid != null">
+        #{newsNid,jdbcType=INTEGER},
+      </if>
+      <if test="newsTitle != null">
+        #{newsTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="newsPicture != null">
+        #{newsPicture,jdbcType=LONGVARBINARY},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="newswebsite.pojo.Collection_newsExample" resultType="java.lang.Long">
+    select count(*) from info_news_collection
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update info_news_collection
+    <set>
+      <if test="record.collectionId != null">
+        collection_id = #{record.collectionId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.newsNid != null">
+        news_nid = #{record.newsNid,jdbcType=INTEGER},
+      </if>
+      <if test="record.newsTitle != null">
+        news_title = #{record.newsTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.newsPicture != null">
+        news_picture = #{record.newsPicture,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update info_news_collection
+    set collection_id = #{record.collectionId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      news_nid = #{record.newsNid,jdbcType=INTEGER},
+      news_title = #{record.newsTitle,jdbcType=VARCHAR},
+      news_picture = #{record.newsPicture,jdbcType=LONGVARBINARY}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update info_news_collection
+    set collection_id = #{record.collectionId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      news_nid = #{record.newsNid,jdbcType=INTEGER},
+      news_title = #{record.newsTitle,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="newswebsite.pojo.Collection_news">
+    update info_news_collection
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="newsNid != null">
+        news_nid = #{newsNid,jdbcType=INTEGER},
+      </if>
+      <if test="newsTitle != null">
+        news_title = #{newsTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="newsPicture != null">
+        news_picture = #{newsPicture,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where collection_id = #{collectionId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="newswebsite.pojo.Collection_news">
+    update info_news_collection
+    set user_id = #{userId,jdbcType=INTEGER},
+      news_nid = #{newsNid,jdbcType=INTEGER},
+      news_title = #{newsTitle,jdbcType=VARCHAR},
+      news_picture = #{newsPicture,jdbcType=LONGVARBINARY}
+    where collection_id = #{collectionId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="newswebsite.pojo.Collection_news">
+    update info_news_collection
+    set user_id = #{userId,jdbcType=INTEGER},
+      news_nid = #{newsNid,jdbcType=INTEGER},
+      news_title = #{newsTitle,jdbcType=VARCHAR}
+    where collection_id = #{collectionId,jdbcType=INTEGER}
+  </update>
+</mapper>

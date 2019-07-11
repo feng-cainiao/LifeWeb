@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="newswebsite.dao.AuthorMapper">
+  <resultMap id="BaseResultMap" type="newswebsite.pojo.Author">
+    <id column="author_id" jdbcType="INTEGER" property="authorId" />
+    <result column="author_telephone" jdbcType="VARCHAR" property="authorTelephone" />
+    <result column="author_password" jdbcType="VARCHAR" property="authorPassword" />
+    <result column="author_identify" jdbcType="VARCHAR" property="authorIdentify" />
+    <result column="author_name" jdbcType="VARCHAR" property="authorName" />
+    <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    author_id, author_telephone, author_password, author_identify, author_name, company_id
+  </sql>
+  <select id="selectByExample" parameterType="newswebsite.pojo.AuthorExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from info_news_author
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from info_news_author
+    where author_id = #{authorId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from info_news_author
+    where author_id = #{authorId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="newswebsite.pojo.AuthorExample">
+    delete from info_news_author
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="newswebsite.pojo.Author">
+    insert into info_news_author (author_id, author_telephone, author_password, 
+      author_identify, author_name, company_id
+      )
+    values (#{authorId,jdbcType=INTEGER}, #{authorTelephone,jdbcType=VARCHAR}, #{authorPassword,jdbcType=VARCHAR}, 
+      #{authorIdentify,jdbcType=VARCHAR}, #{authorName,jdbcType=VARCHAR}, #{companyId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="newswebsite.pojo.Author">
+    insert into info_news_author
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="authorId != null">
+        author_id,
+      </if>
+      <if test="authorTelephone != null">
+        author_telephone,
+      </if>
+      <if test="authorPassword != null">
+        author_password,
+      </if>
+      <if test="authorIdentify != null">
+        author_identify,
+      </if>
+      <if test="authorName != null">
+        author_name,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="authorId != null">
+        #{authorId,jdbcType=INTEGER},
+      </if>
+      <if test="authorTelephone != null">
+        #{authorTelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="authorPassword != null">
+        #{authorPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="authorIdentify != null">
+        #{authorIdentify,jdbcType=VARCHAR},
+      </if>
+      <if test="authorName != null">
+        #{authorName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="newswebsite.pojo.AuthorExample" resultType="java.lang.Long">
+    select count(*) from info_news_author
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update info_news_author
+    <set>
+      <if test="record.authorId != null">
+        author_id = #{record.authorId,jdbcType=INTEGER},
+      </if>
+      <if test="record.authorTelephone != null">
+        author_telephone = #{record.authorTelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.authorPassword != null">
+        author_password = #{record.authorPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.authorIdentify != null">
+        author_identify = #{record.authorIdentify,jdbcType=VARCHAR},
+      </if>
+      <if test="record.authorName != null">
+        author_name = #{record.authorName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.companyId != null">
+        company_id = #{record.companyId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update info_news_author
+    set author_id = #{record.authorId,jdbcType=INTEGER},
+      author_telephone = #{record.authorTelephone,jdbcType=VARCHAR},
+      author_password = #{record.authorPassword,jdbcType=VARCHAR},
+      author_identify = #{record.authorIdentify,jdbcType=VARCHAR},
+      author_name = #{record.authorName,jdbcType=VARCHAR},
+      company_id = #{record.companyId,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="newswebsite.pojo.Author">
+    update info_news_author
+    <set>
+      <if test="authorTelephone != null">
+        author_telephone = #{authorTelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="authorPassword != null">
+        author_password = #{authorPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="authorIdentify != null">
+        author_identify = #{authorIdentify,jdbcType=VARCHAR},
+      </if>
+      <if test="authorName != null">
+        author_name = #{authorName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where author_id = #{authorId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="newswebsite.pojo.Author">
+    update info_news_author
+    set author_telephone = #{authorTelephone,jdbcType=VARCHAR},
+      author_password = #{authorPassword,jdbcType=VARCHAR},
+      author_identify = #{authorIdentify,jdbcType=VARCHAR},
+      author_name = #{authorName,jdbcType=VARCHAR},
+      company_id = #{companyId,jdbcType=VARCHAR}
+    where author_id = #{authorId,jdbcType=INTEGER}
+  </update>
+</mapper>

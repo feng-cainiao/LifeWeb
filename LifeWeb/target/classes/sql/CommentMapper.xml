@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="newswebsite.dao.CommentMapper">
+  <resultMap id="map1" type="newswebsite.pojo.Comment">
+    <id column="comment_id" jdbcType="INTEGER" property="commentId" />
+    <result column="news_nid" jdbcType="INTEGER" property="newsNid" />
+    <result column="comment_content" jdbcType="VARCHAR" property="commentContent" />
+    <result column="comment_approve" jdbcType="INTEGER" property="commentApprove" />
+    <result column="comment_time" jdbcType="TIMESTAMP" property="commentTime" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <association property="user" javaType="newswebsite.pojo.User">
+      <id column="user_id" jdbcType="INTEGER" property="userId" />
+      <result column="user_name" jdbcType="VARCHAR" property="userName" />
+      <result column="user_telephone" jdbcType="VARCHAR" property="userTelephone" />
+      <result column="user_password" jdbcType="VARCHAR" property="userPassword" />
+      <result column="user_photo" jdbcType="VARCHAR" property="userPhoto" />
+    </association>
+  </resultMap>
+  <select id="select_comments" parameterType="java.util.Map" resultMap="map1">
+     SELECT *
+     FROM info_news_comment  c ,info_news_user u
+     WHERE c.`news_nid`=#{newsId,jdbcType=INTEGER} AND c.`user_id`=u.`user_id`
+     <if test="userid != null">
+       and c.`user_id`=#{userid,jdbcType=INTEGER}
+     </if>
+    <if test="ord == 2">
+      order by c.`comment_num` DESC
+    </if>
+    <if test="ord == 1">
+      order by c.`comment_time` DESC
+    </if>
+
+  </select>
+  <select id="select_comments_time" parameterType="java.lang.Integer" resultMap="map1">
+     SELECT *
+     FROM info_news_comment  c ,info_news_user u
+     WHERE c.`news_nid`=#{newsId,jdbcType=INTEGER} AND c.`user_id`=u.`user_id`
+     order by c.`comment_time` DESC
+  </select>
+  <insert id="insert_comment" parameterType="newswebsite.pojo.Comment">
+    insert into info_news_comment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="commentId != null">
+        comment_id,
+      </if>
+      <if test="newsNid != null">
+        news_nid,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="commentContent != null">
+        comment_content,
+      </if>
+      <if test="commentApprove != null">
+        comment_approve,
+      </if>
+      <if test="commentTime != null">
+        comment_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="commentId != null">
+        #{commentId,jdbcType=INTEGER},
+      </if>
+      <if test="newsNid != null">
+        #{newsNid,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="commentContent != null">
+        #{commentContent,jdbcType=VARCHAR},
+      </if>
+      <if test="commentApprove != null">
+        #{commentApprove,jdbcType=INTEGER},
+      </if>
+      <if test="commentTime != null">
+        #{commentTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+   <update id="update_Approve" parameterType="java.lang.String">
+      UPDATE  info_news_comment t
+      SET t.`comment_approve`=t.`comment_approve`+1
+       WHERE t.`comment_id` in
+       <foreach collection="array"  item="tagId" index="index"
+                open="(" close=")" separator=",">
+           #{tagId}
+       </foreach>
+   </update>
+
+
+
+
+  <resultMap id="BaseResultMap" type="newswebsite.pojo.Comment">
+    <id column="comment_id" jdbcType="INTEGER" property="commentId" />
+    <result column="news_nid" jdbcType="INTEGER" property="newsNid" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="comment_content" jdbcType="VARCHAR" property="commentContent" />
+    <result column="comment_approve" jdbcType="INTEGER" property="commentApprove" />
+    <result column="comment_time" jdbcType="TIMESTAMP" property="commentTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    comment_id, news_nid, user_id, comment_content, comment_approve, comment_time
+  </sql>
+  <select id="selectByExample" parameterType="newswebsite.pojo.CommentExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from info_news_comment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from info_news_comment
+    where comment_id = #{commentId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from info_news_comment
+    where comment_id = #{commentId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="newswebsite.pojo.CommentExample">
+    delete from info_news_comment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="newswebsite.pojo.Comment">
+    insert into info_news_comment (comment_id, news_nid, user_id, 
+      comment_content, comment_approve, comment_time
+      )
+    values (#{commentId,jdbcType=INTEGER}, #{newsNid,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+      #{commentContent,jdbcType=VARCHAR}, #{commentApprove,jdbcType=INTEGER}, #{commentTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+
+  <select id="countByExample" parameterType="newswebsite.pojo.CommentExample" resultType="java.lang.Long">
+    select count(*) from info_news_comment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update info_news_comment
+    <set>
+      <if test="record.commentId != null">
+        comment_id = #{record.commentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.newsNid != null">
+        news_nid = #{record.newsNid,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.commentContent != null">
+        comment_content = #{record.commentContent,jdbcType=VARCHAR},
+      </if>
+      <if test="record.commentApprove != null">
+        comment_approve = #{record.commentApprove,jdbcType=INTEGER},
+      </if>
+      <if test="record.commentTime != null">
+        comment_time = #{record.commentTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update info_news_comment
+    set comment_id = #{record.commentId,jdbcType=INTEGER},
+      news_nid = #{record.newsNid,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      comment_content = #{record.commentContent,jdbcType=VARCHAR},
+      comment_approve = #{record.commentApprove,jdbcType=INTEGER},
+      comment_time = #{record.commentTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="newswebsite.pojo.Comment">
+    update info_news_comment
+    <set>
+      <if test="newsNid != null">
+        news_nid = #{newsNid,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="commentContent != null">
+        comment_content = #{commentContent,jdbcType=VARCHAR},
+      </if>
+      <if test="commentApprove != null">
+        comment_approve = #{commentApprove,jdbcType=INTEGER},
+      </if>
+      <if test="commentTime != null">
+        comment_time = #{commentTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where comment_id = #{commentId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="newswebsite.pojo.Comment">
+    update info_news_comment
+    set news_nid = #{newsNid,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      comment_content = #{commentContent,jdbcType=VARCHAR},
+      comment_approve = #{commentApprove,jdbcType=INTEGER},
+      comment_time = #{commentTime,jdbcType=TIMESTAMP}
+    where comment_id = #{commentId,jdbcType=INTEGER}
+  </update>
+</mapper>

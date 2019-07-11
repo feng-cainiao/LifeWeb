@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+ 
+
+  <context id="DB2Tables" targetRuntime="MyBatis3">
+   <commentGenerator>
+	  <property name="suppressAllComments" value="true" />
+	</commentGenerator>
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+        connectionURL="jdbc:mysql://localhost:3306/info_news_website?useAffectedRows=true"
+        userId="root"
+        password="root">
+    </jdbcConnection>
+	
+    <javaTypeResolver >
+      <property name="forceBigDecimals" value="false" />
+    </javaTypeResolver>
+
+    <javaModelGenerator
+       targetPackage="newswebsite.pojo" targetProject=".\src\main\java">
+      <property name="enableSubPackages" value="true" />
+      <property name="trimStrings" value="true" />
+    </javaModelGenerator>
+
+    <sqlMapGenerator 
+      targetPackage="sql"  targetProject=".\src\main\resources">
+      <property name="enableSubPackages" value="true" />
+    </sqlMapGenerator>
+
+    <javaClientGenerator type="XMLMAPPER" 
+     targetPackage="newswebsite.dao"  targetProject=".\src\main\java">
+      <property name="enableSubPackages" value="true" />
+    </javaClientGenerator>
+
+     <table  tableName="info_news" domainObjectName="News" >
+     </table>
+     <table  tableName="info_news_kind" domainObjectName="Kind" >        
+     </table>
+      <table  tableName="info_news_approve" domainObjectName="Approve" >
+      </table>
+      <table  tableName="info_news_author" domainObjectName="Author" >
+      </table>
+      <table  tableName="info_news_collection" domainObjectName="Collection_news" >
+      </table>
+      <table  tableName="info_news_comment" domainObjectName="Comment" >
+      </table>
+      <table  tableName="info_news_company" domainObjectName="Company" >
+      </table>
+      <table  tableName="info_news_reply" domainObjectName="Reply" >
+      </table>
+      <table  tableName="info_news_user" domainObjectName="User" >
+      </table>
+      <table tableName="info_news_approveNews" domainObjectName="ApproveNews">
+      </table>
+      <table tableName="info_news_approveComment" domainObjectName="ApproveComment">
+      </table>
+  </context>
+</generatorConfiguration>
