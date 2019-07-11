@@ -25,7 +25,7 @@ public class Admin_Controller {
     @RequestMapping("/login_cancel")
     @ResponseBody
     public Msg getlogin_cancel(HttpSession httpSession){
-        httpSession.invalidate()+"aaaaaa";
+        httpSession+"bbb".invalidate()+"aaaaaa";
         return Msg.success();
     }
     public void gitTest(){
