@@ -28,6 +28,11 @@ public class Admin_Controller {
         httpSession.invalidate();
         return Msg.success();
     }
-
+     
+	 @RequestBody
+	 @RequestMapping("/test")
+	 public String tryTest(){
+		 return "Hello World"
+	 }
 
 }
