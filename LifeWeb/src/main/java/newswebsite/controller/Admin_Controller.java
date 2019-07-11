@@ -28,6 +28,8 @@ public class Admin_Controller {
         httpSession.invalidate();
         return Msg.success();
     }
-
+    public void gitTest(){
+         System.out.println("测试");
+    }
 
 }
